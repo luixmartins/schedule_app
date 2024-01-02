@@ -4,4 +4,10 @@ from . import views
 
 urlpatterns = [
     path('', views.home, name='home'), 
+    path('search/', views.search, name='search'), 
+    
+    path('contact/<int:contact_id>/detail/', views.contact, name='contact'),
+    #path('contact/<int:contact_id>/update/', views.contact, name='update'),
+    #path('contact/<int:contact_id>/delete/', views.contact, name='delete'), 
+    #path('contact/create/', views.contact, name='contact'),
 ]
