@@ -14,7 +14,7 @@ def create(request):
     form_action = reverse('create') 
 
     if request.method == "POST":
-        form = ContactForm(request.POST)
+        form = ContactForm(request.POST, request.FILES)
 
         context = {
             'form': ContactForm(), 
@@ -45,7 +45,7 @@ def update(request, contact_id):
     form_action = reverse('update', args=(contact_id, )) #para alterar dinamicamente a variavel no form. VERIFICAR FORM ACTION no arquivo CREATE.HTML 
 
     if request.method == "POST": #verifica o método para atualizar os dados 
-        form = ContactForm(request.POST, instance=contact)
+        form = ContactForm(request.POST, request.FILES, instance=contact)
 
         context = {
             'form': ContactForm(), 
@@ -70,8 +70,17 @@ def update(request, contact_id):
     return render(request, 'create.html', context)
 
 def delete(request, contact_id):
+    confirmation = request.POST.get('confirmation', 'no')
     contact = get_object_or_404(Contact, id=contact_id)
+    
+    if confirmation == 'yes':
+        contact.delete()
 
-    contact.delete()
+        return redirect('home')
 
-    return redirect('home')
+    context = {
+        'contact': contact, 
+        'confirmation': confirmation, 
+    }
+    return render(request, 'contact.html', context)
+    
