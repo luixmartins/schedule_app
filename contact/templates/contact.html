@@ -12,6 +12,13 @@
         <p><b>Created at:</b> {{ contact.created_date }}</p>
         <p><b>Description:</b> {{ contact.description }}</p>
         <p><b>Category:</b> {{ contact.category }}</p>
+
+        <div class="contact-links">
+            <a class="btn btn-link" href="">Update</a>
+            <form action="" method="POST">
+                <button class="btn btn-link btn-delete" type="submit">Delete</button>
+            </form>
+        </div>
     </div>
 
 {% endblock content %}
