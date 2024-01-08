@@ -2,8 +2,9 @@ from django.shortcuts import redirect, render
 from django.contrib import messages 
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import auth 
+from django.contrib.auth.decorators import login_required
 
-from contact.forms import RegisterForm
+from contact.forms import RegisterForm, RegisterUpdateForm
 
 def register(request):
     form = RegisterForm()
@@ -52,8 +53,38 @@ def login_view(request):
         }
     )
 
-
+@login_required(login_url='login')
 def logout_view(request):
     auth.logout(request)
    
     return redirect('login')
+
+@login_required(login_url='login')
+def user_update(request):
+    form = RegisterUpdateForm(instance=request.user)
+
+    if request.method != 'POST':
+
+
+        return render(
+            request, 
+            'update_user.html', 
+            {
+                'form': form
+            }
+        )
+    
+    form = RegisterUpdateForm(data=request.POST, instance=request.user)
+
+    if not form.is_valid():
+        return render(
+            request, 
+            'update_user.html', 
+            {
+                'form': form
+            }
+        )
+    
+    form.save()
+    
+    return redirect('home')

@@ -1,15 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import Http404
-from django.db.models import Q 
-from django.core.paginator import Paginator
-from django import forms 
-from django.core.exceptions import ValidationError
 from django.urls import reverse 
+from django.contrib.auth.decorators import login_required
 
 from contact.models import Contact
 from contact.forms import ContactForm
 
-# Create your views here.
+@login_required(login_url='login')
 def create(request):
     form_action = reverse('create') 
 
@@ -25,7 +21,10 @@ def create(request):
             #contact = form.save(commit=False) #não salva no banco de dados 
             #contact.show = False 
 
-            contact = form.save()
+            contact = form.save(commit=False)
+            contact.owner = request.user 
+
+            contact.save()
 
             return redirect('contact', contact_id=contact.id)
 
@@ -39,8 +38,9 @@ def create(request):
 
     return render(request, 'create.html', context)
 
+@login_required(login_url='login')
 def update(request, contact_id):
-    contact = get_object_or_404(Contact, id=contact_id, show=True) #busca contato 
+    contact = get_object_or_404(Contact, id=contact_id, show=True, owner=request.user) #busca contato 
 
     form_action = reverse('update', args=(contact_id, )) #para alterar dinamicamente a variavel no form. VERIFICAR FORM ACTION no arquivo CREATE.HTML 
 
@@ -69,6 +69,7 @@ def update(request, contact_id):
 
     return render(request, 'create.html', context)
 
+@login_required(login_url='login')
 def delete(request, contact_id):
     confirmation = request.POST.get('confirmation', 'no')
     contact = get_object_or_404(Contact, id=contact_id)

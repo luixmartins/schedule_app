@@ -16,12 +16,30 @@ def home(request):
 
     context = {
         'page_obj': page_obj, 
-        'site_title': 'Contacts'
+        'site_title': 'All contacts'
     }
 
     print(context)
 
     return render(request, 'index.html', context)
+
+def my_contacts(request):
+    contacts = Contact.objects.filter(owner=request.user)
+
+    paginator = Paginator(contacts, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj, 
+        'site_title': 'My contacts'
+    }
+
+    return render(
+        request, 
+        'index.html', 
+        context, 
+    )
 
 def contact(request, contact_id):
     #single_contact = Contact.objects.filter(pk=contact_id).first()
